@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Last Edited: 09/19/2022
-@authors: Udit Parikh, Jay Jotwani
+@authors: Udit Parikh, Yajat Jotwani
 """
 rover = {
     'wheel_assembly' : {
