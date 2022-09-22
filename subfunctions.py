@@ -24,14 +24,18 @@ def get_gear_ratio(speed_reducer):
 # print(get_gear_ratio(rover))
     
     
-def tau_dcmotor(rover):
+def tau_dcmotor(omega,rover):
     '''
     Returns the motor shaft torque when given motor shaft speed and a 
     dictionary containing important specifications for the motor.
     '''
-    return(rover['wheel_assembly']['motor']['torque_stall'])
+    #return(rover['wheel_assembly']['motor']['torque_stall'])
+    tau_s = rover['wheel_assembly']['motor']['torque_stall']
+    tau_nl = rover['wheel_assembly']['motor']['torque_noload']
+    omega_nl = rover['wheel_assembly']['motor']['speed_noload']
+    return tau_s - ((tau_s - tau_nl) / omega_nl) * omega
 
-# print(tau_dcmotor(rover))
+print(tau_dcmotor(3, rover))
 
     
 
