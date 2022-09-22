@@ -35,8 +35,20 @@ def tau_dcmotor(omega,rover):
     omega_nl = rover['wheel_assembly']['motor']['speed_noload']
     return tau_s - ((tau_s - tau_nl) / omega_nl) * omega
 
-print(tau_dcmotor(3, rover))
+# print(tau_dcmotor(3, rover))
 
     
+def F_drive(omega, rover):
+    '''
+    input: omega and rover
+    output: force applied to rover by drive system
+
+    '''
+    tau_in = tau_dcmotor(omega, rover)
+    tau_out = get_gear_ratio(rover) * tau_in
+    r = rover['wheel_assembly']['wheel']['radius']
+    return  6* tau_out / r
+
+print(F_drive(0,rover))
 
 
