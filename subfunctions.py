@@ -5,6 +5,7 @@ Last Edited: 09/19/2022
 @authors: Udit Parikh, Yajat Jotwani
 """
 from define_rover import *
+from numpy import sin, radians, cos, tan
 # delete test later
 #print(rover['wheel_assembly']['wheel']['radius'])
 
@@ -12,8 +13,7 @@ rover, planet = rover1()
 def get_mass(rover):
     if type(rover) != dict:
         raise Exception("Input to get_mass must be a dictionary")
-    return((6*rover['wheel_assembly']['wheel']['mass']) + rover['wheel_assembly']['speed_reducer']['mass'] 
-           + rover['wheel_assembly']['motor']['mass'] + rover['chassis']['mass'] + rover['science_payload']['mass'] + rover['power_subsys']['mass'])
+    return((6*rover['wheel_assembly']['wheel']['mass']) + rover['wheel_assembly']['speed_reducer']['mass'] + rover['wheel_assembly']['motor']['mass'] + rover['chassis']['mass'] + rover['science_payload']['mass'] + rover['power_subsys']['mass'])
 
 #  or speed_reducer['type'].lower() != 'reverted'
 def get_gear_ratio(speed_reducer):
@@ -47,8 +47,15 @@ def F_drive(omega, rover):
     tau_in = tau_dcmotor(omega, rover)
     tau_out = get_gear_ratio(rover) * tau_in
     r = rover['wheel_assembly']['wheel']['radius']
-    return  6* tau_out / r
+    return  6 * tau_out / r
 
-print(F_drive(0,rover))
+# print(F_drive(0,rover))
+
+def F_gravity(terrain_angle, rover, planet):
+    roverMass = get_mass(rover)
+    g_mars = planet['g']
+    return(roverMass * -3.72 * sin(radians(terrain_angle)))
+
+print(F_gravity(30,rover,planet))
 
 

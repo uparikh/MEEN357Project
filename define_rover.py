@@ -38,6 +38,6 @@ def rover1():
         }
     
     planet = {
-        'g' : 3.72 #m/s^2
+        'g' : -3.72 #m/s^2
         }
     return rover, planet
