@@ -48,7 +48,7 @@ def get_mass(rover):
            + rover['wheel_assembly']['motor']['mass'] + rover['chassis']['mass'] + rover['science_payload']['mass'] + rover['power_subsys']['mass'])
 
 def get_gear_ratio(speed_reducer):
-    if type(speed_reducer) != dict:
+    if type(speed_reducer) != dict or speed_reducer['type'].lower != 'reverted':
         raise Exception("Input to get_gear_ratio must be a dictionary")
     return(((rover['wheel_assembly']['speed_reducer']['diam_gear']) / (rover['wheel_assembly']['speed_reducer']['diam_pinion']))**2)
 
