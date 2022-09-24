@@ -6,6 +6,7 @@ Last Edited: 09/19/2022
 """
 from define_rover import *
 from numpy import sin, radians, cos, tan, array, ndarray, zeros, ndim
+from math import erf
 
 rover, planet = rover1()
 def get_mass(rover):
@@ -14,6 +15,9 @@ def get_mass(rover):
     return((6*rover['wheel_assembly']['wheel']['mass']) + 6*rover['wheel_assembly']['speed_reducer']['mass'] + 6*rover['wheel_assembly']['motor']['mass'] + rover['chassis']['mass'] + rover['science_payload']['mass'] + rover['power_subsys']['mass'])
 
 def get_gear_ratio(speed_reducer):
+    '''
+    output: Speed ratio from input pinion shaft to output gear shaft. Unitless
+    '''
     if type(speed_reducer) != dict:
         raise Exception("Input to get_gear_ratio must be a dictionary")
     return(((speed_reducer['diam_gear']) / (speed_reducer['diam_pinion']))**2)    
@@ -61,7 +65,6 @@ def F_drive(omega, rover):
         fDrive[w] = 6 * tau_out / r  
     return fDrive
 
-omega = 0
 print(F_drive(omega,rover))
 
 def F_gravity(terrain_angle, rover, planet):
@@ -69,3 +72,21 @@ def F_gravity(terrain_angle, rover, planet):
     g_mars = planet['g']
     return(roverMass * g_mars * sin(radians(terrain_angle)))
 
+def F_rolling(omega, terrain_angle, rover, planet, Crr):
+    '''
+    input: anlge w/ horizon, mass of rover, rolling resistance-coe
+    output:magnitude of the force component acting on the rover in the direction of its 
+    translational motion due to gravity as a function of terrain inclination angle and rover 
+    properties.
+
+    '''
+    
+    oemga_wheel = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
+    roverMass = get_mass(rover)
+    g_mars = planet['g']
+    rover_velocity = omega_wheel * rover['wheel_assembly']['wheel']['radius']
+    Frr = (Crr * roverMass * g_mars * sin(radians(terrain_angle)) ) # Frr_simple
+    
+    return erf(40*rover_velocity) * Frr
+print('mass of rover: ',get_mass(rover))
+print(F_rolling(omega, 30, rover, planet, 0.2)
