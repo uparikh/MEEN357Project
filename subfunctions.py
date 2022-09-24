@@ -5,7 +5,7 @@ Last Edited: 09/19/2022
 @authors: Udit Parikh, Yajat Jotwani
 """
 from define_rover import *
-from numpy import sin, radians, cos, tan, array, zeros
+from numpy import sin, radians, cos, tan, array, ndarray, zeros, ndim
 
 rover, planet = rover1()
 def get_mass(rover):
@@ -16,45 +16,59 @@ def get_mass(rover):
 def get_gear_ratio(speed_reducer):
     if type(speed_reducer) != dict:
         raise Exception("Input to get_gear_ratio must be a dictionary")
-    return(((rover['wheel_assembly']['speed_reducer']['diam_gear']) / (rover['wheel_assembly']['speed_reducer']['diam_pinion']))**2)    
+    return(((speed_reducer['diam_gear']) / (speed_reducer['diam_pinion']))**2)    
     
 def tau_dcmotor(omega,rover):
     '''
     Returns the motor shaft torque when given motor shaft speed and a 
     dictionary containing important specifications for the motor.
+    
+    NOTE: I don't know if we have to do this but I put a check in for a scalar
+    See reason for this in slide 6 of Lab3_ProjectPhase1_Help on Canvas
     '''
-    if type(omega) != ndarray:
-        raise Exception('omega (Motor shaft speed) must be a numpy array')
+    if ndim(omega) != 0 and ndim(omega) != 1:
+        raise Exception('omega (Motor shaft speed) must be a scalar or 1D numpy array. No matricies are allowed')
     elif type(rover) != dict:
         raise Exception('Rover properties must be a dictionary')
-   
     tau_s = rover['torque_stall']
     tau_nl = rover['torque_noload']
     omega_nl = rover['speed_noload']
+    if ndim(omega) == 0:
+        return (tau_s - ((tau_s - tau_nl) / omega_nl) * omega)
     tau = zeros(len(omega))
-    for i in range(len(omega)):
-        if omega[i] > omega_nl:
+    for w in range(len(omega)):
+        if omega[w] > omega_nl:
             return 0
-        elif omega[i] < 0:
+        elif omega[w] < 0:
             return tau_s
-    return (tau_s - ((tau_s - tau_nl) / omega_nl) * omega)
+        else:
+            tau[w] = (tau_s - ((tau_s - tau_nl) / omega_nl) * omega[w])
+    return tau
 
-omega = array([0.00,0.50,1.00,2.00,3.00,3.80])
-print(tau_dcmotor(omega,rover['wheel_assembly']['motor'])
+def F_drive(omega, rover):
+    '''
+    input: omega and rover
+    output: force applied to rover by drive system
+    '''
+    if ndim(omega) != 0 and ndim(omega) != 1:
+        raise Exception('omega (Motor shaft speed) must be a scalar or 1D numpy array. No matricies are allowed')
+    elif type(rover) != dict:
+        raise Exception('Rover properties must be a dictionary')
+    r = rover['wheel_assembly']['wheel']['radius']
+    tau_out = get_gear_ratio(rover['wheel_assembly']['speed_reducer']) * tau_dcmotor(omega, rover['wheel_assembly']['motor'])
+    if ndim(omega) == 0:
+        return 6*tau_out / r
+    fDrive = zeros(len(omega))
+    for w in range(len(omega)):
+        tau_out = get_gear_ratio(rover['wheel_assembly']['speed_reducer']) * tau_dcmotor(omega[w], rover['wheel_assembly']['motor'])
+        fDrive[w] = 6 * tau_out / r  
+    return fDrive
 
-# def F_drive(omega, rover):
-    # '''
-    # input: omega and rover
-    # output: force applied to rover by drive system
-    # '''
-    # tau_in = tau_dcmotor(omega, rover)
-    # tau_out = get_gear_ratio(rover) * tau_in
-    # r = rover['wheel_assembly']['wheel']['radius']
-    # return  6 * tau_out / r
+omega = 0
+print(F_drive(omega,rover))
 
-# def F_gravity(terrain_angle, rover, planet):
-    # roverMass = get_mass(rover)
-    # g_mars = planet['g']
-    # return(roverMass * g_mars * sin(radians(terrain_angle)))
-
+def F_gravity(terrain_angle, rover, planet):
+    roverMass = get_mass(rover)
+    g_mars = planet['g']
+    return(roverMass * g_mars * sin(radians(terrain_angle)))
 
