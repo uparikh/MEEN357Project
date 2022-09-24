@@ -22,9 +22,6 @@ def tau_dcmotor(omega,rover):
     '''
     Returns the motor shaft torque when given motor shaft speed and a 
     dictionary containing important specifications for the motor.
-    
-    NOTE: I don't know if we have to do this but I put a check in for a scalar
-    See reason for this in slide 6 of Lab3_ProjectPhase1_Help on Canvas
     '''
     if ndim(omega) != 0 and ndim(omega) != 1:
         raise Exception('omega (Motor shaft speed) must be a scalar or 1D numpy array. No matricies are allowed')
