@@ -54,7 +54,7 @@ def F_drive(omega, rover):
 def F_gravity(terrain_angle, rover, planet):
     roverMass = get_mass(rover)
     g_mars = planet['g']
-    return(roverMass * -3.72 * sin(radians(terrain_angle)))
+    return(roverMass * g_mars * sin(radians(terrain_angle)))
 
 print(F_gravity(30,rover,planet))
 
