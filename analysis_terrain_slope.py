@@ -3,7 +3,7 @@
 
 
 from define_rover import *
-from subfunctions import *
+from subfunctions import F_net
 from numpy import linspace, zeros, array
 from scipy.optimize import root_scalar
 from matplotlib.pyplot import plot,xlabel,ylabel
