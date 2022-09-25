@@ -65,12 +65,14 @@ def F_drive(omega, rover):
         fDrive[w] = 6 * tau_out / r  
     return fDrive
 
-print(F_drive(omega,rover))
+#print(F_drive(omega,rover))
 
 def F_gravity(terrain_angle, rover, planet):
     roverMass = get_mass(rover)
     g_mars = planet['g']
     return(roverMass * g_mars * sin(radians(terrain_angle)))
+
+omega = array([0,0,1,1.5])
 
 def F_rolling(omega, terrain_angle, rover, planet, Crr):
     '''
@@ -80,13 +82,14 @@ def F_rolling(omega, terrain_angle, rover, planet, Crr):
     properties.
 
     '''
-    
-    oemga_wheel = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
+
+    omega_wheel = omega * get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
     roverMass = get_mass(rover)
     g_mars = planet['g']
     rover_velocity = omega_wheel * rover['wheel_assembly']['wheel']['radius']
-    Frr = (Crr * roverMass * g_mars * sin(radians(terrain_angle)) ) # Frr_simple
-    
+    Frr = erf(40 * rover_velocity) * (Crr * roverMass * g_mars * cos(radians(terrain_angle)) ) # Frr_simple
+
     return erf(40*rover_velocity) * Frr
-print('mass of rover: ',get_mass(rover))
-print(F_rolling(omega, 30, rover, planet, 0.2)
+
+#print(F_rolling(omega[2], 30, rover, planet, 0.2))
+
