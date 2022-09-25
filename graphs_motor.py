@@ -7,9 +7,9 @@ from subfunctions import tau_dcmotor
 from numpy import linspace, zeros, multiply
 
 rover, planet = rover1()
+omega = linspace(0,3.8,20) #increase last input to make more smooth
 
 subplot(3,1,1)
-omega = linspace(0,3.8,20) #increase last input to make more smooth
 tau = zeros(len(omega))
 for w in range(len(omega)):   
     tau[w] = tau_dcmotor(omega[w], rover['wheel_assembly']['motor'])
