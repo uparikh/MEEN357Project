@@ -97,19 +97,20 @@ def F_rolling(omega, terrain_angle, rover, planet, Crr):
 
 print(F_rolling(omega[2], 30, rover, planet, 0.2))
 
-# def F_net(omega, terrain_angle, rover, planet, Crr):
-#     '''
-#     output: total force, in Newtons, acting on the rover in the direction of its motion
-#     '''
-#     if abs(terrain_angle) > 75:
-#          raise Exception('Terrain-angle is above 75 degrees magnitude')
-#     elif type(rover) != dict:
-#         raise Exception('Rover properties must be a dictionary')
-#     elif type(planet) != dict:
-#         raise Exception('Planet properties must be a dictionary')
-#     else:
-        
+def F_net(omega, terrain_angle, rover, planet, Crr):
+    '''
+    output: total force, in Newtons, acting on the rover in the direction of its motion
+    '''
+    if abs(terrain_angle) > 75:
+          raise Exception('Terrain-angle is above 75 degrees magnitude')
+    elif type(rover) != dict:
+        raise Exception('Rover properties must be a dictionary')
+    elif type(planet) != dict:
+        raise Exception('Planet properties must be a dictionary')
+    else:
+        ummmm
          
+
 
 '''
     Parameters
