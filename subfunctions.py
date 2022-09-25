@@ -82,14 +82,51 @@ def F_rolling(omega, terrain_angle, rover, planet, Crr):
     properties.
 
     '''
+    if ndim(omega) != 0 and ndim(omega) != 1:
+        raise Exception('omega (Motor shaft speed) must be a scalar or 1D numpy array. No matricies are allowed')
+    elif type(rover) != dict:
+        raise Exception('Rover properties must be a dictionary')
+    else:
+        omega_wheel = omega * get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
+        roverMass = get_mass(rover)
+        g_mars = planet['g']
+        rover_velocity = omega_wheel * rover['wheel_assembly']['wheel']['radius']
+        Frr = erf(40 * rover_velocity) * (Crr * roverMass * g_mars * cos(radians(terrain_angle)) ) # Frr_simple
 
-    omega_wheel = omega * get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
-    roverMass = get_mass(rover)
-    g_mars = planet['g']
-    rover_velocity = omega_wheel * rover['wheel_assembly']['wheel']['radius']
-    Frr = erf(40 * rover_velocity) * (Crr * roverMass * g_mars * cos(radians(terrain_angle)) ) # Frr_simple
+        return erf(40*rover_velocity) * Frr
 
-    return erf(40*rover_velocity) * Frr
+print(F_rolling(omega[2], 30, rover, planet, 0.2))
 
-#print(F_rolling(omega[2], 30, rover, planet, 0.2))
+# def F_net(omega, terrain_angle, rover, planet, Crr):
+#     '''
+#     output: total force, in Newtons, acting on the rover in the direction of its motion
+#     '''
+#     if abs(terrain_angle) > 75:
+#          raise Exception('Terrain-angle is above 75 degrees magnitude')
+#     elif type(rover) != dict:
+#         raise Exception('Rover properties must be a dictionary')
+#     elif type(planet) != dict:
+#         raise Exception('Planet properties must be a dictionary')
+#     else:
+        
+         
 
+'''
+    Parameters
+    ----------
+    omega : TYPE
+        DESCRIPTION.
+    terrain_angle : TYPE
+        DESCRIPTION.
+    rover : TYPE
+        DESCRIPTION.
+    planet : TYPE
+        DESCRIPTION.
+    Crr : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+'''
