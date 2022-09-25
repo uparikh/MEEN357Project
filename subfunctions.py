@@ -65,69 +65,101 @@ def F_drive(omega, rover):
         fDrive[w] = 6 * tau_out / r  
     return fDrive
 
-#print(F_drive(omega,rover))
-
 def F_gravity(terrain_angle, rover, planet):
-    roverMass = get_mass(rover)
-    g_mars = planet['g']
-    return(roverMass * g_mars * sin(radians(terrain_angle)))
-
-omega = array([0,0,1,1.5])
-
+    '''
+    Test Code:
+        terrain_angle = array([-5,0,5,10,20,30])
+        print(F_gravity(terrain_angle, rover, planet))
+    '''
+    if type(rover) != dict:
+        raise Exception('Rover properties must be a dictionary')
+    elif type(planet) != dict:
+        raise Exception('Planet must be a dictionary')
+    elif ndim(terrain_angle) != 0 and ndim(terrain_angle) != 1:
+        raise Exception('terrain angle must be a scalar or 1D numpy array. No matricies are allowed')
+    g = planet['g']
+    m = get_mass(rover) 
+    if ndim(terrain_angle) == 0: 
+        return(m * g * sin(radians(terrain_angle)))
+    Fgt = zeros(len(terrain_angle))
+    for t in range(len(terrain_angle)):
+         Fgt[t] = m * g * sin(radians(terrain_angle[t]))
+    return Fgt
+        
 def F_rolling(omega, terrain_angle, rover, planet, Crr):
     '''
+    if 
     input: anlge w/ horizon, mass of rover, rolling resistance-coe
     output:magnitude of the force component acting on the rover in the direction of its 
     translational motion due to gravity as a function of terrain inclination angle and rover 
     properties.
+    
+    NOTE: Calculates the rolling resistance over ALL SIX WHEELS
 
+    TEST: 
+        omega = array([0,0.5,1,2,3,3.8])
+        terrain_angle = array([-5,0,5,10,20,30])
+        Crr = 0.2
+        print(F_rolling(omega, terrain_angle, rover, planet, Crr))
     '''
-    if ndim(omega) != 0 and ndim(omega) != 1:
-        raise Exception('omega (Motor shaft speed) must be a scalar or 1D numpy array. No matricies are allowed')
-    elif type(rover) != dict:
-        raise Exception('Rover properties must be a dictionary')
-    else:
-        omega_wheel = omega * get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
-        roverMass = get_mass(rover)
-        g_mars = planet['g']
-        rover_velocity = omega_wheel * rover['wheel_assembly']['wheel']['radius']
-        Frr = erf(40 * rover_velocity) * (Crr * roverMass * g_mars * cos(radians(terrain_angle)) ) # Frr_simple
-
-        return erf(40*rover_velocity) * Frr
-
-print(F_rolling(omega[2], 30, rover, planet, 0.2))
-
-def F_net(omega, terrain_angle, rover, planet, Crr):
-    '''
-    output: total force, in Newtons, acting on the rover in the direction of its motion
-    '''
-    if abs(terrain_angle) > 75:
-          raise Exception('Terrain-angle is above 75 degrees magnitude')
-    elif type(rover) != dict:
+    if type(rover) != dict:
         raise Exception('Rover properties must be a dictionary')
     elif type(planet) != dict:
-        raise Exception('Planet properties must be a dictionary')
-    else:
-        ummmm
-         
+        raise Exception('Planet must be a dictionary')
+    elif ndim(terrain_angle) != 0 or ndim(omega) != 0:
+        if ndim(terrain_angle) == 1 and ndim(omega) == 1:
+            if len(terrain_angle) == len(omega):
+                pass
+            else:
+                raise Exception('terrain_angle and omega must be of the same dimension')
+        else:
+            raise Exception('terrain angle and omega must be a scalar or 1D numpy array. No matricies are allowed')
+    elif Crr <= 0:
+        raise Exception('Crr must be a positive scalar')
+    gear_ratio = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
+    wheel_radius = rover['wheel_assembly']['wheel']['radius']
+    roverMass = get_mass(rover)
+    g_mars = planet['g']
+    if ndim(terrain_angle) == 0:  
+       if abs(terrain_angle) > 75:
+           raise Exception('Terrain angle must be between -75 and +75 degrees')
+       omega_wheel = omega * gear_ratio
+       rover_velocity = omega_wheel * wheel_radius
+       return(erf(40 * rover_velocity) * (Crr * roverMass * g_mars * cos(radians(terrain_angle)))) # Frr_simple
+    Frr = zeros(len(omega))
+    for i in range(len(omega)):
+        if abs(terrain_angle[i]) > 75:
+            raise Exception('All terrain angles must be between -75 and +75 degrees')
+        omega_wheel = omega[i] * gear_ratio
+        rover_velocity = omega_wheel * wheel_radius
+        Frr[i] = erf(40 * rover_velocity) * (Crr * roverMass * g_mars * cos(radians(terrain_angle[i])))
+    return Frr
+
+def F_net(omega, terrain_angle, rover, planet, Crr):
+    if type(rover) != dict:
+        raise Exception('Rover properties must be a dictionary')
+    elif type(planet) != dict:
+        raise Exception('Planet must be a dictionary')
+    elif ndim(terrain_angle) != 0 or ndim(omega) != 0:
+        if ndim(terrain_angle) == 1 and ndim(omega) == 1:
+            if len(terrain_angle) == len(omega):
+                pass
+            else:
+                raise Exception('terrain_angle and omega must be of the same dimension')
+        else:
+            raise Exception('terrain angle and omega must be a scalar or 1D numpy array. No matricies are allowed')
+    elif Crr <= 0:
+        raise Exception('Crr must be a positive scalar')
+    if ndim(terrain_angle) == 0:  
+       if abs(terrain_angle) > 75:
+           raise Exception('Terrain angle must be between -75 and +75 degrees')
+       else:
+           return F_drive(omega, rover) + F_gravity(terrain_angle, rover, planet) + F_rolling(omega, terrain_angle, rover, planet, Crr)
+    Frr = zeros(len(omega))
+    for i in range(len(omega)):
+        if abs(terrain_angle[i]) > 75:
+            raise Exception('All terrain angles must be between -75 and +75 degrees')
+        Frr[i] = F_drive(omega[i], rover) + F_gravity(terrain_angle[i], rover, planet) + F_rolling(omega[i], terrain_angle[i], rover, planet, Crr)
+    return Frr
 
 
-'''
-    Parameters
-    ----------
-    omega : TYPE
-        DESCRIPTION.
-    terrain_angle : TYPE
-        DESCRIPTION.
-    rover : TYPE
-        DESCRIPTION.
-    planet : TYPE
-        DESCRIPTION.
-    Crr : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    None.
-
-'''
