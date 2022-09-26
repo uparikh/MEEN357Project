@@ -1,8 +1,46 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Sep 25 19:30:12 2022
+'''
+output: determine the speed of the rover at various values for the 
+coefficient of rolling resistance AND terrain slope.
 
-@author: uditparikh
-"""
 
+'''
+from define_rover import *
+from subfunctions import *
+from numpy import linspace, zeros, array
+from scipy.optimize import root_scalar
+from matplotlib.pyplot import plot,xlabel,ylabel, figure
+from random import uniform
+from numpy import linspace, meshgrid, zeros, shape
+from mpl_toolkits.mplot3d import Axes3D
+
+
+slope_array_deg = linspace(-10,35,25)
+Crr_array = linspace(0.01,0.4,25)
+omega_nl = rover['wheel_assembly']['motor']['speed_noload']
+x0 = uniform(0,omega_nl/2)
+x1 = uniform(omega_nl/2,omega_nl)
+
+CRR, SLOPE = meshgrid(Crr_array, slope_array_deg)
+VMAX = zeros(shape(CRR), dtype = float)
+N = shape(CRR)[0]
+
+for i in range(N):
+    for j in range(N):
+        Crr_sample = float(CRR[i,j])
+        slope_sample = float(SLOPE[i,j])
+        
+        # here you put code to find the max speed at Crr_sample and slope_sample
+        func_find_root = lambda omega: F_net(omega, SLOPE[i,j], rover, planet, CRR[i,j])
+        root = root_scalar(func_find_root, method='secant',x0=x0,x1=x1)
+
+        VMAX[i,j] = root.root
+        
+figure = figure()
+ax = Axes3D(figure)
+ax.plot_surface(CRR, SLOPE, VMAX)
+
+# plot(CRR,v_max)
+# xlabel('Coefficient Rolling Resistance (CRR)')
+# ylabel('Max Rover Speed [m/s]')
+
+# (figure, elev = N1, azim = N2)
