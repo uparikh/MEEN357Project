@@ -8,7 +8,7 @@ from define_rover import *
 from subfunctions import *
 from numpy import linspace, zeros, array
 from scipy.optimize import root_scalar
-from matplotlib.pyplot import plot,xlabel,ylabel, figure
+from matplotlib.pyplot import plot,xlabel,ylabel, figure,title
 from random import uniform
 from numpy import linspace, meshgrid, zeros, shape
 from mpl_toolkits.mplot3d import Axes3D
@@ -26,21 +26,27 @@ N = shape(CRR)[0]
 
 for i in range(N):
     for j in range(N):
-        Crr_sample = float(CRR[i,j])
-        slope_sample = float(SLOPE[i,j])
-        
-        # here you put code to find the max speed at Crr_sample and slope_sample
-        func_find_root = lambda omega: F_net(omega, SLOPE[i,j], rover, planet, CRR[i,j])
-        root = root_scalar(func_find_root, method='secant',x0=x0,x1=x1)
-
-        VMAX[i,j] = root.root
+         #if (SLOPE[i,j] < 0) and (abs(CRR[i,j]) < 1e-5):
+             #raise Exception('NAN')
+         
+         #else:
+            Crr_sample = float(CRR[i,j])
+            slope_sample = float(SLOPE[i,j])
+            
+            # here you put code to find the max speed at Crr_sample and slope_sample
+            func_find_root = lambda omega: F_net(omega, SLOPE[i,j], rover, planet, CRR[i,j])
+            root = root_scalar(func_find_root, method='secant',x0=x0,x1=x1)
+    
+            VMAX[i,j] = root.root
         
 figure = figure()
-ax = Axes3D(figure)
+ax = Axes3D(figure, auto_add_to_figure=False)
 ax.plot_surface(CRR, SLOPE, VMAX)
 
-# plot(CRR,v_max)
-# xlabel('Coefficient Rolling Resistance (CRR)')
-# ylabel('Max Rover Speed [m/s]')
 
-# (figure, elev = N1, azim = N2)
+figure.add_axes(ax)
+xlabel('Coefficient Rolling Resistance (CRR)')
+ylabel('Terrain Angle [deg]')
+ax.set_zlabel('Max Rover Speed [m/s]')
+
+title('Max Velocity vs. CRR and Terrain Slope')
