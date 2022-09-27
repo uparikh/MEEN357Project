@@ -35,7 +35,7 @@ for i in range(N):
         
 figure = figure()
 ax = Axes3D(figure, auto_add_to_figure=False)
-ax.plot_surface(CRR, SLOPE, VMAX)
+surf = ax.plot_surface(CRR, SLOPE, VMAX)
 
 
 figure.add_axes(ax)
