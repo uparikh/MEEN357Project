@@ -77,9 +77,11 @@ def F_gravity(terrain_angle, rover, planet):
         raise Exception('Planet must be a dictionary')
     elif ndim(terrain_angle) != 0 and ndim(terrain_angle) != 1:
         raise Exception('terrain angle must be a scalar or 1D numpy array. No matricies are allowed')
+    if abs(terrain_angle) > 75:
+        raise Exception('Terrain angle must be between -75 and +75 degrees')
     g = planet['g']
     m = get_mass(rover) 
-    if ndim(terrain_angle) == 0: 
+    if ndim(terrain_angle) == 0:
         return(m * g * sin(radians(terrain_angle)))
     Fgt = zeros(len(terrain_angle))
     for t in range(len(terrain_angle)):
