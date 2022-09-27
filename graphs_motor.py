@@ -4,7 +4,7 @@
 from matplotlib.pyplot import plot, xlabel, ylabel, subplot, subplots_adjust
 from define_rover import *
 from subfunctions import tau_dcmotor
-from numpy import linspace, zeros, multiply
+from numpy import linspace, zeros, multiply, max, where
 
 rover, planet = rover1()
 omega = linspace(0,3.8,20) #increase last input to make more smooth
@@ -25,9 +25,11 @@ ylabel('Motor Power [W]')
 
 subplot(3,1,3)
 plot(omega,power)
-xlabel('Motor Shaft Spped [rad/s]')
+xlabel('Motor Shaft Speed [rad/s]')
 ylabel('Motor Power [W]')
 
 subplots_adjust(bottom=-1.0)
+
+
 
 
