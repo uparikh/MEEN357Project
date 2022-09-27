@@ -18,8 +18,9 @@ x0 = uniform(0,omega_nl/2)
 x1 = uniform(omega_nl/2,omega_nl)
 
 for a in range(len(Crr_array)):
-    func_find_root = lambda omega: F_net(omega, terrain_angle, rover, planet, Crr_array[a])
-    root = root_scalar(func_find_root, method='secant',x0=x0,x1=x1)
+    # func_find_root = lambda omega: F_net(omega, terrain_angle, rover, planet, Crr_array[a])
+    # root = root_scalar(func_find_root, method='secant',x0=x0,x1=x1)
+    root = root_scalar(F_net,(terrain_angle, rover, planet, Crr_array[a]), method='secant',x0=x0,x1=x1)
     v_max[a] = root.root
     
 plot(Crr_array,v_max)

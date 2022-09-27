@@ -30,3 +30,4 @@ ylabel('Motor Power [W]')
 
 subplots_adjust(bottom=-1.0)
 
+
