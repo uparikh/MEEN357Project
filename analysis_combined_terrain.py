@@ -23,7 +23,7 @@ omega_nl = rover['wheel_assembly']['motor']['speed_noload']
 
 # x0 = uniform(0,omega_nl/2)
 # x1 = uniform(omega_nl/2,omega_nl)
-x0 = 0
+x0 = -omega_nl
 x1 = omega_nl
 
 CRR, SLOPE = meshgrid(Crr_array, slope_array_deg)
@@ -41,7 +41,7 @@ for i in range(N):
         # except ValueError:
         #     VMAX[i,j] = NaN
             
-        if ((Crr_sample > 0.1) or (Crr_sample < -0.1)) and (slope_sample > 0):
+        if ((Crr_sample > 0.01) or (Crr_sample < -0.01)) and (slope_sample > 0):
             VMAX[i,j] = (root_scalar(F_net,(slope_sample,rover,planet,Crr_sample), method='secant', x0=x0, x1=x1).root) * radius / gear_ratio
         
         else:
