@@ -39,8 +39,8 @@ ax.plot_surface(CRR, SLOPE, VMAX)
 
 
 figure.add_axes(ax)
-xlabel('Coefficient Rolling Resistance (CRR)')
-ylabel('Terrain Angle [deg]')
+ax.set_xlabel('Coefficient Rolling Resistance (CRR)')
+ax.set_ylabel('Terrain Angle [deg]')
 ax.set_zlabel('Max Rover Speed [m/s]')
 
 title('Max Velocity vs. CRR and Terrain Slope')
