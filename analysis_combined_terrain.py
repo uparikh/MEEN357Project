@@ -36,7 +36,8 @@ for i in range(N):
 
 
 figure = figure()
-ax = Axes3D(figure, auto_add_to_figure=False)
+# ax = Axes3D(figure, auto_add_to_figure=False)
+ax = Axes3D(figure, elev = 25, azim = 25,auto_add_to_figure=False)
 ax.plot_surface(CRR, SLOPE, VMAX)
 
 
