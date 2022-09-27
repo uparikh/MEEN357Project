@@ -23,19 +23,21 @@ x1 = uniform(omega_nl/2,omega_nl)
 CRR, SLOPE = meshgrid(Crr_array, slope_array_deg)
 VMAX = zeros(shape(CRR), dtype = float)
 N = shape(CRR)[0]
-
+radius = rover['wheel_assembly']['wheel']['radius']
+gear_ratio = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
 for i in range(N):
     for j in range(N):
         Crr_sample = float(CRR[i,j])
         slope_sample = float(SLOPE[i,j])
         try:
-            VMAX[i,j] = root_scalar(F_net,(slope_sample,rover,planet,Crr_sample), method='secant', x0=x0, x1=x1).root
+            VMAX[i,j] = (root_scalar(F_net,(slope_sample,rover,planet,Crr_sample), method='secant', x0=x0, x1=x1).root) * radius / gear_ratio
         except ValueError:
             VMAX[i,j] = NaN
-        
+
+
 figure = figure()
 ax = Axes3D(figure, auto_add_to_figure=False)
-surf = ax.plot_surface(CRR, SLOPE, VMAX)
+ax.plot_surface(CRR, SLOPE, VMAX)
 
 
 figure.add_axes(ax)
