@@ -163,3 +163,4 @@ def F_net(omega, terrain_angle, rover, planet, Crr):
             raise Exception('All terrain angles must be between -75 and +75 degrees')
         Frr[i] = F_drive(omega[i], rover) + F_gravity(terrain_angle[i], rover, planet) + F_rolling(omega[i], terrain_angle[i], rover, planet, Crr)
     return Frr
+
