@@ -33,15 +33,12 @@ for i in range(N):
     for j in range(N):
         Crr_sample = float(CRR[i,j])
         slope_sample = float(SLOPE[i,j])
-        
         try:
             VMAX[i,j] = (root_scalar(F_net,(slope_sample,rover,planet,Crr_sample), method='bisect', bracket=[0,omega_nl]).root)/ gear_ratio * radius
         except ValueError:
             VMAX[i,j] = NaN
         
-
 figure = figure()
-# ax = Axes3D(figure, auto_add_to_figure=False)
 ax = Axes3D(figure, elev = 25, azim = 25,auto_add_to_figure=False)
 ax.plot_surface(CRR, SLOPE, VMAX)
 
