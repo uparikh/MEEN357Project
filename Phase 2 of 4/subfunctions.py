@@ -315,9 +315,8 @@ def motorW(v, rover):
     
     '''
     gear_ratio = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
-    # gear_ratio = 7/4
-    r_wheel = rover['wheel_assembly']['wheel']['radius']
-    omega_motor = v / (r_wheel * gear_ratio)
+    r_wheel = rover['wheel_assembly']['wheel']['radius'])
+    omega_motor = (v / (gear_ratio)) * (2*math.pi)
     return omega_motor
 
 print(motorW(0.1,rover))
