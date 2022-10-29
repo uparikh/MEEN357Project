@@ -325,12 +325,34 @@ def motorW(v, rover):
         return omega_motor
     # omega_motor = (v) / (r_wheel * gear_ratio) * (2*math.pi)
     omega_motor = ((v * gear_ratio) / (r_wheel)) 
-    return omega_motor
+    w = omega_motor
+    return w
 # v = np.array([0.1,0.3])
 # v = 0.1
 # print(motorW(v,rover))
     
-    
 
+def rover_dynamics(t, y, rover, planet, experiment): 
+    '''
+    computes the derivative of the state vector: [velocity, position] for 
+    the rover given its current state. It requires rover and experiment 
+    dictionary input parameters. It is intended to be passed to an ODE 
+    solver.
+    '''
+    ...
+def mechpower(v, rover):
+    '''
+    output: computed instantaneous mechanical power output by a single DC motor 
+    at each point in a given velocity profile.
+    P(t) = tau_motor(t) * omega_motor(t)
 
+    '''
     
+    radius = rover['wheel_assembly']['wheel']['radius']
+    
+    power = np.zeros(len(v))
+    for i in range(len(v)):
+        wheel_omega = v[i] / radius
+        power[i] = tau_dcmotor(wheel_omega, motor) *  motorW(v[i], rover)
+        
+print(mechpower(0.05,rover))
