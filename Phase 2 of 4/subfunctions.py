@@ -9,7 +9,7 @@ import math
 import numpy as np
 from define_rover_phase2 import *
 
-
+rover,planet = rover1()
 def get_mass(rover):
     """
     Inputs:  rover:  dict      Data structure containing rover parameters
@@ -314,12 +314,11 @@ def motorW(v, rover):
     omega_motor = (V_wheel * d_pinion) / (r_wheel * d_gear)
     
     '''
-    # gear_ratio = get_gear_ratio(rover)
-    gear_ratio = 7/4
+    gear_ratio = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
+    # gear_ratio = 7/4
     r_wheel = rover['wheel_assembly']['wheel']['radius']
     omega_motor = v / (r_wheel * gear_ratio)
     return omega_motor
-
 
 print(motorW(0.1,rover))
     
