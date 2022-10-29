@@ -314,15 +314,21 @@ def motorW(v, rover):
     omega_motor = (V_wheel * d_pinion) / (r_wheel * d_gear)
     
     '''
-    if (not isinstance(v, np.ndarray) and type(v) != int and type(v) != float):
-        raise Exception("First input must be a scalar or a vector. Matrices are not allowed.")
     gear_ratio = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
     r_wheel = rover['wheel_assembly']['wheel']['radius']
+    if (not isinstance(v, np.ndarray) and type(v) != int and type(v) != float):
+        raise Exception("First input must be a scalar or a vector. Matrices are not allowed.")
+    if (isinstance(v, np.ndarray)):
+        omega_motor = np.zeros(len(v))
+        for i in range(len(v)):
+            omega_motor[i] = ((v[i] * gear_ratio) / (r_wheel))
+        return omega_motor
     # omega_motor = (v) / (r_wheel * gear_ratio) * (2*math.pi)
     omega_motor = ((v * gear_ratio) / (r_wheel)) 
     return omega_motor
-
-print(motorW(0.3,rover))
+# v = np.array([0.1,0.3])
+# v = 0.1
+# print(motorW(v,rover))
     
     
 
