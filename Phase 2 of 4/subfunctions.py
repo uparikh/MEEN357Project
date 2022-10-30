@@ -11,7 +11,7 @@ from define_rover_phase2 import *
 from define_experiment import *
 from scipy.interpolate import interp1d
 import scipy.integrate as integrate
-
+import matplotlib.pyplot as plt
 
 rover,planet = rover1()
 experiment, end_event = experiment1()
@@ -437,14 +437,14 @@ def battenergy(t,v,rover): #### NOT DONE ####
     if (type(rover) != dict):
         raise Exception('Second input must be a dictionary')
     power = mechpower(v, rover)  
+    plt.plot(t,power,'r*--')
     return (integrate.simps(power,t))
+    
 
 t = np.array([0,1,2,3,4,5,6])
 v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
-
 print(battenergy(t, v, rover))
 
-    
 
     
     

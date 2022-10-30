@@ -11,8 +11,8 @@ alpha_fun = interp1d(experiment['alpha_dist'], experiment['alpha_deg'], kind = '
 terrain_dist = np.linspace(np.amin(experiment['alpha_dist']),np.amax(experiment['alpha_dist']),100)
 position = alpha_fun(terrain_dist)
 
-plt.plot(terrain_angle,position,color='g',label="interpolated values with cubic fit")
-plt.plot(experiment['alpha_dist'],experiment['alpha_deg'],'*',color='red', label='known data values')
+plt.plot(terrain_dist,position,color='g',label="interpolated values with cubic fit")
+plt.plot(experiment['alpha_dist'],experiment['alpha_deg'],'r*', label='known data values')
 plt.title("Terrain Angle vs. Position with cubic approximation")
 plt.xlabel("Postion (m)")
 plt.ylabel("Terrain Angle (deg)")
