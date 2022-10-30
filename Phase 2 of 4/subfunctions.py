@@ -8,8 +8,14 @@
 import math
 import numpy as np
 from define_rover_phase2 import *
+from define_experiment import *
+from scipy.interpolate import interp1d
+import scipy.integrate as integrate
+
 
 rover,planet = rover1()
+experiment, end_event = experiment1()
+
 def get_mass(rover):
     """
     Inputs:  rover:  dict      Data structure containing rover parameters
@@ -269,7 +275,7 @@ def F_net(omega, terrain_angle, rover, planet, Crr):
         raise Exception('First input must be a scalar or a vector. Matrices are not allowed.')
         
     # Check that the second input is a scalar or a vector
-    if (type(terrain_angle) != int) and (type(terrain_angle) != float) and (not isinstance(terrain_angle, np.ndarray)):
+    if (type(terrain_angle) != int) and (type(terrain_angle) != float) and (not isinstance(terrain_angle, np.ndarray,)):
         raise Exception('Second input must be a scalar or a vector. If input is a vector, it should be defined as a numpy array.')
     elif not isinstance(terrain_angle, np.ndarray):
         terrain_angle = np.array([terrain_angle],dtype=float) # make the scalar a numpy array
@@ -311,24 +317,31 @@ def motorW(v, rover):
     '''
     Compute the rotational speed of the motor shaft [rad/s] given the 
     translational velocity of the rover and the rover dictionary.
+    
+    inputs: Rover translational velocity (as a scalar or a numpy array), Data structure
+    containing rover parameters (as a dictionary)
+    
+    output: Motor speed in rad/s. 
+    
     omega_motor = (V_wheel * d_pinion) / (r_wheel * d_gear)
     
     '''
+    if (type(v) != int) and (type(v) != float) and (not isinstance(v, (np.ndarray,np.floating,np.integer))):
+        raise Exception('First input must be a scalar or a vector. If input is a vector, it should be defined as a numpy array.')
+    elif not isinstance(v, np.ndarray):
+        v = np.array([v],dtype=float) # make the scalar a numpy array
+    elif len(np.shape(v)) != 1:
+        raise Exception('First input must be a scalar or a vector. Matrices are not allowed.')
     gear_ratio = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
     r_wheel = rover['wheel_assembly']['wheel']['radius']
-    if (not isinstance(v, np.ndarray) and type(v) != int and type(v) != float):
-        raise Exception("First input must be a scalar or a vector. Matrices are not allowed.")
-    if (isinstance(v, np.ndarray)):
-        omega_motor = np.zeros(len(v))
-        for i in range(len(v)):
-            omega_motor[i] = ((v[i] * gear_ratio) / (r_wheel))
-        return omega_motor
-    # omega_motor = (v) / (r_wheel * gear_ratio) * (2*math.pi)
-    omega_motor = ((v * gear_ratio) / (r_wheel)) 
-    w = omega_motor
+    w = np.zeros(len(v))
+    for i in range(len(v)):
+        w[i] = ((v[i] * gear_ratio) / (r_wheel))
     return w
+
+##motorW TEST##
 # v = np.array([0.1,0.3])
-# v = 0.1
+# v = 0.3
 # print(motorW(v,rover))
     
 
@@ -338,21 +351,117 @@ def rover_dynamics(t, y, rover, planet, experiment):
     the rover given its current state. It requires rover and experiment 
     dictionary input parameters. It is intended to be passed to an ODE 
     solver.
+    
+    Inputs: time sample in seconds(scalar)Two element state vector in the form [rover velocity, rover position],
+    Data structure containing rover definition, Data structure containing planet definition,
+    Data structure containing experiment definition
+    
+    Output: Two element array first derivative of state vector in the form [rover acceleration, rover velocity]
     '''
-    ...
+    if (type(t) != int and type(t) != float):
+        raise Exception("first input must be a scalar")
+    elif (not isinstance(y,np.ndarray)):
+        raise Exception("second input must be an array of length 2")
+    try:
+            (len(y) != 2)
+    except TypeError:
+            raise Exception("second input must be an array of length 2")
+    if len(y) != 2:
+            raise Exception("second input must be an array of length 2")
+    elif type(rover) != dict:
+        raise Exception('Third input must be a dict')
+    elif type(planet) != dict:
+        raise Exception('Third input must be a dict')
+    elif type(experiment) != dict:
+        raise Exception('Third input must be a dict')
+    if (type(y) == np.ndarray):   
+        y = y.tolist() # Added to convert number from <class 'numpy.float64'> to <class 'float'>
+    alpha_fun = interp1d(experiment['alpha_dist'], experiment['alpha_deg'], kind = 'cubic', fill_value='extrapolate')
+    terrain_angle = (float(alpha_fun(y[1])))
+    Crr = experiment['Crr']
+    mass = get_mass(rover)
+    mW = motorW(y[0], rover)   
+    
+    Fn = F_net(mW, terrain_angle, rover, planet, Crr)  
+    dydt = np.zeros(2)
+    dydt[1] =y[0]
+    dydt[0] = Fn/mass
+    return dydt
+
+##Rover_Dynamics TEST##
+# t = 20
+# y = np.array([0.25,500])
+# print(rover_dynamics(t, y, rover, planet, experiment))
+
+
 def mechpower(v, rover):
     '''
-    output: computed instantaneous mechanical power output by a single DC motor 
-    at each point in a given velocity profile.
+    Input: translational speed of the rover (as a numpy array) and the 
+    characteristics of a specific rover (as a dictionary)
+    
+    Output: computed instantaneous mechanical power output by a single DC motor 
+    at each point in a given velocity profile in Watts (numpy array)
     P(t) = tau_motor(t) * omega_motor(t)
 
     '''
+    if (type(v) != int) and (type(v) != float) and (not isinstance(v, np.ndarray)):
+        raise Exception('First input must be a scalar or a vector. If input is a vector, it should be defined as a numpy array.')
+    elif not isinstance(v, np.ndarray):
+        v = np.array([v],dtype=float) # make the scalar a numpy array
+    elif len(np.shape(v)) != 1:
+        raise Exception('First input must be a scalar or a vector. Matrices are not allowed.')
+    if (type(rover) != dict):
+        raise Exception('Second input must be a dictionary')
     
     radius = rover['wheel_assembly']['wheel']['radius']
-    
-    power = np.zeros(len(v))
+    P = np.zeros(len(v))
     for i in range(len(v)):
-        wheel_omega = v[i] / radius
-        power[i] = tau_dcmotor(wheel_omega, motor) *  motorW(v[i], rover)
-        
-print(mechpower(0.05,rover))
+        mW = motorW(v[i], rover)
+        P[i] = tau_dcmotor(mW, rover['wheel_assembly']['motor']) *  mW
+    return P
+
+##mechower TEST##
+# print(mechpower(np.array([0.05,0.25]),rover))
+
+def battenergy(t,v,rover): #### NOT DONE ####
+    if (not isinstance(v, np.ndarray)):
+        raise Exception('First input must be a vector. If input is a vector, it should be defined as a numpy array.')
+    if len(np.shape(v)) != 1:
+        raise Exception('First input must be vector. Matrices are not allowed.')
+    if (type(t) != int) and (type(t) != float) and (not isinstance(t, np.ndarray)):
+        raise Exception('First input must be a vector. If input is a vector, it should be defined as a numpy array.')
+    if len(np.shape(t)) != 1:
+        raise Exception('First input must be a scalar or a vector. Matrices are not allowed.')
+    if (len(t) != len(v)):
+        raise Exception('First input and Second input must be arrays of same length')
+    if (type(rover) != dict):
+        raise Exception('Second input must be a dictionary')
+    power = mechpower(v, rover)  
+    return (integrate.simps(power,t))
+
+t = np.array([0,1,2,3,4,5,6])
+v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
+
+print(battenergy(t, v, rover))
+
+    
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
