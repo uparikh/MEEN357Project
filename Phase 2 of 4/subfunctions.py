@@ -461,7 +461,20 @@ t = np.array([0,1,2,3,4,5,6])
 v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
 print(battenergy(t, v, rover))
 
-
+def simulate_rover(rover, planet,experiment,end_events):
+    '''
+    Inputs: 
+        rover | dictionary | Data structure containing rover definition
+        planet | dictionary | Data structure containing planet definition
+        experiment | dictionary | Data structure containing parameters of the
+        trajectory to be followed by the simulation of rover dynamics
+        end_event | dictionary | Data structure containing the conditions necessary
+        and sufficient to terminate simulation of rover dynamics
+        
+    Output:
+        rover | dictionary | Data structure containing the parameters of the rover, 
+        including updated telemetry information
+    '''
 
 
 
