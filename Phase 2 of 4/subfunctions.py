@@ -533,8 +533,17 @@ def simulate_rover(rover, planet,experiment,end_events):
         battery_energy | scalar | Total energy to be extracted from the battery to complete trajectory [J]
         energy_per_distance | scalar | Total energy spent from battery per meter traveled [J/m]
     '''
+    t_dist = experiment['alpha_dist']
+    t_angle = experiment['alpha_deg'] 
+    t_span = experiment['time_range']
+    intialCon = experiment['initial_conditions']
+    
+    terrainFun = lambda t,y : rover_dynamics(t, y, rover, planet, experiment)
+    sol = integrate.solve_ivp(terrainFun,t_span,intialCon,method='BDF')
+    return sol
 
-
+end_events = end_event
+print(simulate_rover(rover, planet, experiment, end_events))
 
 
 
