@@ -389,8 +389,8 @@ def rover_dynamics(t, y, rover, planet, experiment):
     return dydt
 
 ##Rover_Dynamics TEST##
-# t = 20
-# y = np.array([0.25,500])
+# t = 0
+# y = np.array([0.33,0])
 # print(rover_dynamics(t, y, rover, planet, experiment))
 
 
@@ -424,11 +424,17 @@ def mechpower(v, rover):
 # print(mechpower(np.array([0.05,0.25]),rover))
 
 def battenergy(t,v,rover): #### NOT DONE ####
+    '''
+    Inputs: t | 1D numpy array | N-element array of time samples from a rover simulation [s]
+            v | 1D numpy array | N-element array of rover velocity data from a simulation [m/s]
+            rover | dictionary | Data structure containing rover definition
+    Outputs: E | scalar | Total electrical energy consumed from the rover battery pack over the input simulation profile [J]
+    '''
     if (not isinstance(v, np.ndarray)):
-        raise Exception('First input must be a vector. If input is a vector, it should be defined as a numpy array.')
+        raise Exception('Second input must be a vector. If input is a vector, it should be defined as a numpy array.')
     if len(np.shape(v)) != 1:
-        raise Exception('First input must be vector. Matrices are not allowed.')
-    if (type(t) != int) and (type(t) != float) and (not isinstance(t, np.ndarray)):
+        raise Exception('Second input must be vector. Matrices are not allowed.')
+    if (not isinstance(t, np.ndarray)):
         raise Exception('First input must be a vector. If input is a vector, it should be defined as a numpy array.')
     if len(np.shape(t)) != 1:
         raise Exception('First input must be a scalar or a vector. Matrices are not allowed.')
@@ -436,19 +442,22 @@ def battenergy(t,v,rover): #### NOT DONE ####
         raise Exception('First input and Second input must be arrays of same length')
     if (type(rover) != dict):
         raise Exception('Second input must be a dictionary')
-    power = mechpower(v, rover)  
-    plt.plot(t,power,'r*--')
-    return (integrate.simps(power,t))
-    
+    effcy_tau = rover['wheel_assembly']['motor']['effcy_tau']
+    effcy = rover['wheel_assembly']['motor']['effcy']
+    mW = motorW(v, rover)
+    tauDCM = tau_dcmotor(mW, rover['wheel_assembly']['motor'])
+    mP = mechpower(v, rover)
+    effcy_fun = interp1d(effcy_tau, effcy,kind='cubic')
+    effcyFuncTau = effcy_fun(tauDCM)
+    battery = np.zeros(len(mP))
+    for j in range(len(mP)):
+        battery[j] = (mP[j] * 6)/effcyFuncTau[j]
+    E = integrate.simps(mP, t)
+    return E
 
 t = np.array([0,1,2,3,4,5,6])
 v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
 print(battenergy(t, v, rover))
-
-
-    
-    
-
 
 
 
