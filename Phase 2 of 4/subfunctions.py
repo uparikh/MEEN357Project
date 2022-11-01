@@ -457,9 +457,9 @@ def battenergy(t,v,rover): #### NOT DONE ####
     E = integrate.trapz(power, t)
     return E
 
-t = np.array([0,1,2,3,4,5,6])
-v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
-print(battenergy(t, v, rover))
+# t = np.array([0,1,2,3,4,5,6])
+# v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
+# print(battenergy(t, v, rover))
 
 def end_of_mission_event(end_event):
     """
@@ -518,11 +518,21 @@ def simulate_rover(rover, planet,experiment,end_events):
         raise Exception('Third input must be a dictionary')
     elif (type(end_events) != dict):
         raise Exception('Fourth input must be a dictionary')
-    
-    t = 0
-    
+ 
 
-
+    '''
+    Rover{'telemetry'}
+        Time | 1D array | n-element array containing the time history of the rover [s]
+        completion_time | scalar | time to complete a mission [s]
+        velocity | 1D array | array containing the velocty of the rover as it follows a trajectory
+        position | 1D array | array containing the position of the rover as it follows a trajectory
+        distance_traveled | scalar | total distace traveled of the rover [m]
+        max_velocty | scalar | maximum velocity of rover along the given trajectory [m/s]
+        average_velocity | scalar | average velocity of rover along a given trajectory [m/s]
+        power |  1D numpy array | array containing the instantaneous power outputted by the motor along the trajectory [W]
+        battery_energy | scalar | Total energy to be extracted from the battery to complete trajectory [J]
+        energy_per_distance | scalar | Total energy spent from battery per meter traveled [J/m]
+    '''
 
 
 
