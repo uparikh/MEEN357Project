@@ -552,7 +552,8 @@ def simulate_rover(rover, planet,experiment,end_events):
                           
     return rover
 # end_events = end_event
-# print(simulate_rover(rover, planet, experiment, end_events))
+# simulate_rover(rover, planet, experiment, end_events)
+# print('\n', rover['telemetry']['completion_time'])
 
 
 
