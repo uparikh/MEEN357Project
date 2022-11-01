@@ -461,6 +461,41 @@ t = np.array([0,1,2,3,4,5,6])
 v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
 print(battenergy(t, v, rover))
 
+def end_of_mission_event(end_event):
+    """
+    Defines an event that terminates the mission simulation. Mission is over
+    when rover reaches a certain distance, has moved for a maximum simulation 
+    time or has reached a minimum velocity.            
+    """
+    
+    mission_distance = end_event['max_distance']
+    mission_max_time = end_event['max_time']
+    mission_min_velocity = end_event['min_velocity']
+    
+    # Assume that y[1] is the distance traveled
+    distance_left = lambda t,y: mission_distance - y[1]
+    distance_left.terminal = True
+    
+    time_left = lambda t,y: mission_max_time - t
+    time_left.terminal = True
+    
+    velocity_threshold = lambda t,y: y[0] - mission_min_velocity;
+    velocity_threshold.terminal = True
+    velocity_threshold.direction = -1
+    
+    # terminal indicates whether any of the conditions can lead to the
+    # termination of the ODE solver. In this case all conditions can terminate
+    # the simulation independently.
+    
+    # direction indicates whether the direction along which the different
+    # conditions is reached matter or does not matter. In this case, only
+    # the direction in which the velocity treshold is arrived at matters
+    # (negative)
+    
+    events = [distance_left, time_left, velocity_threshold]
+    
+    return events
+
 def simulate_rover(rover, planet,experiment,end_events):
     '''
     Inputs: 
@@ -475,6 +510,15 @@ def simulate_rover(rover, planet,experiment,end_events):
         rover | dictionary | Data structure containing the parameters of the rover, 
         including updated telemetry information
     '''
+    if (type(rover) != dict):
+        raise Exception('First input must be a dictionary')
+    elif (type(planet) != dict):
+        raise Exception('Second input must be a dictionary')
+    elif (type(experiment) != dict):
+        raise Exception('Third input must be a dictionary')
+    elif (type(end_events) != dict):
+        raise Exception('Fourth input must be a dictionary')
+    
 
 
 
