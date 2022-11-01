@@ -60,6 +60,7 @@ def get_gear_ratio(speed_reducer):
     d1 = speed_reducer['diam_pinion']
     d2 = speed_reducer['diam_gear']
     
+    # Computes gear ratio using pinion and gear diameters
     Ng = (d2/d1)**2
     
     return Ng
@@ -336,6 +337,7 @@ def motorW(v, rover):
     r_wheel = rover['wheel_assembly']['wheel']['radius']
     w = np.zeros(len(v))
     for i in range(len(v)):
+        # compute rotational speed of motor using velcoity of rover, gear ratio, and radius of wheel
         w[i] = ((v[i] * gear_ratio) / (r_wheel))
     return w
 
