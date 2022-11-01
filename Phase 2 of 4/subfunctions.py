@@ -454,13 +454,12 @@ def battenergy(t,v,rover): #### NOT DONE ####
     battery = np.zeros(len(mP))
     for j in range(len(mP)):
         battery[j] = (mP[j] * 6)/effcyFuncTau[j]
-    E = integrate.simps(mP, t)
+    E = integrate.trapz(mP, t)
     return E
 
 t = np.array([0,1,2,3,4,5,6])
 v = np.array([0.33,0.32,0.33,0.2,0.2,0.25,0.28])
 print(battenergy(t, v, rover))
-
 
 
 
