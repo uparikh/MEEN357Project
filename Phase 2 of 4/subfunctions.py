@@ -451,10 +451,10 @@ def battenergy(t,v,rover): #### NOT DONE ####
     mP = mechpower(v, rover)
     effcy_fun = interp1d(effcy_tau, effcy,kind='cubic')
     effcyFuncTau = effcy_fun(tauDCM)
-    battery = np.zeros(len(mP))
+    power = np.zeros(len(mP))
     for j in range(len(mP)):
-        battery[j] = (mP[j] * 6)/effcyFuncTau[j]
-    E = integrate.trapz(mP, t)
+        power[j] = (mP[j] * 6)/effcyFuncTau[j]
+    E = integrate.trapz(power, t)
     return E
 
 t = np.array([0,1,2,3,4,5,6])
