@@ -360,7 +360,7 @@ def rover_dynamics(t, y, rover, planet, experiment):
     
     Output: Two element array first derivative of state vector in the form [rover acceleration, rover velocity]
     '''
-    if (type(t) != int and type(t) != float):
+    if (type(t) != np.int64 and type(t) != np.float64 and type(t) != float and type(t) != int):
         raise Exception("first input must be a scalar")
     elif (not isinstance(y,np.ndarray)):
         raise Exception("second input must be an array of length 2")
@@ -519,7 +519,6 @@ def simulate_rover(rover, planet,experiment,end_events):
     elif (type(end_events) != dict):
         raise Exception('Fourth input must be a dictionary')
  
-
     '''
     Rover{'telemetry'}
         Time | 1D array | n-element array containing the time history of the rover [s]
@@ -533,17 +532,27 @@ def simulate_rover(rover, planet,experiment,end_events):
         battery_energy | scalar | Total energy to be extracted from the battery to complete trajectory [J]
         energy_per_distance | scalar | Total energy spent from battery per meter traveled [J/m]
     '''
-    t_dist = experiment['alpha_dist']
-    t_angle = experiment['alpha_deg'] 
-    t_span = experiment['time_range']
-    intialCon = experiment['initial_conditions']
-    
     terrainFun = lambda t,y : rover_dynamics(t, y, rover, planet, experiment)
-    sol = integrate.solve_ivp(terrainFun,t_span,intialCon,method='BDF')
-    return sol
-
-end_events = end_event
-print(simulate_rover(rover, planet, experiment, end_events))
+    sol = integrate.solve_ivp(terrainFun, np.array([experiment['time_range'][0],end_event['max_time']]),experiment['initial_conditions'],method='BDF',events=end_of_mission_event(end_event))
+    avgV = np.average(sol.y[0])
+    por = mechpower(sol.y[0], rover)
+    distanceTrav = sol.y[1][len(sol.y[1])-1]
+    batenergy = battenergy(sol.t, sol.y[0], rover)
+    energyDistance = batenergy/distanceTrav
+    rover['telemetry'] = {'Time':sol.t, 
+                          'completion_time':sol.t[len(sol.t)-1],
+                          'velocity':sol.y[0],
+                          'position':sol.y[1],
+                          'distance_traveled':sol.y[1][len(sol.y[1])-1],
+                          'max_velocity':np.max(sol.y[0]),
+                          'average_velocity':avgV,
+                          'power':por,
+                          'battery_energy':batenergy,
+                          'energy_per_distance':energyDistance}              
+                          
+    return rover
+# end_events = end_event
+# print(simulate_rover(rover, planet, experiment, end_events))
 
 
 

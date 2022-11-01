@@ -18,12 +18,14 @@ def experiment1():
                                         0.714, 4.151, 4.042]),
                   'Crr' : 0.1}
     
-    
     # Below are default values for example only:
     end_event = {'max_distance' : 50,
                  'max_time' : 5000,
                  'min_velocity' : 0.01}
+    print(type(experiment['time_range'][1]))
     
     return experiment, end_event
+
+experiment1()
 
 
