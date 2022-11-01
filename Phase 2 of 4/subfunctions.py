@@ -519,7 +519,8 @@ def simulate_rover(rover, planet,experiment,end_events):
     elif (type(end_events) != dict):
         raise Exception('Fourth input must be a dictionary')
     
-
+    t = 0
+    
 
 
 
