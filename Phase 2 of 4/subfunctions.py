@@ -335,6 +335,7 @@ def motorW(v, rover):
         raise Exception('First input must be a scalar or a vector. Matrices are not allowed.')
     gear_ratio = get_gear_ratio(rover['wheel_assembly']['speed_reducer'])
     r_wheel = rover['wheel_assembly']['wheel']['radius']
+    # Intialize zero omega array with same length as veclity vector.
     w = np.zeros(len(v))
     for i in range(len(v)):
         # compute rotational speed of motor using velcoity of rover, gear ratio, and radius of wheel
@@ -378,15 +379,19 @@ def rover_dynamics(t, y, rover, planet, experiment):
         raise Exception('Third input must be a dict')
     if (type(y) == np.ndarray):   
         y = y.tolist() # Added to convert number from <class 'numpy.float64'> to <class 'float'>
+    # interpolate the given data points from experimental data using cubic relation
     alpha_fun = interp1d(experiment['alpha_dist'], experiment['alpha_deg'], kind = 'cubic', fill_value='extrapolate')
     terrain_angle = (float(alpha_fun(y[1])))
     Crr = experiment['Crr']
     mass = get_mass(rover)
+    # compute motor's angular velocity using the rover's translational velocity.
     mW = motorW(y[0], rover)   
-    
+    # compute net force for given data
     Fn = F_net(mW, terrain_angle, rover, planet, Crr)  
     dydt = np.zeros(2)
+    # reassign velocity to second positon in state vector's array
     dydt[1] =y[0]
+    # Calculate accleration
     dydt[0] = Fn/mass
     return dydt
 
@@ -416,9 +421,13 @@ def mechpower(v, rover):
         raise Exception('Second input must be a dictionary')
     
     radius = rover['wheel_assembly']['wheel']['radius']
+    # generate zero array with same legnth as velcity vector
     P = np.zeros(len(v))
+
     for i in range(len(v)):
+        # calculate motor's angualar velocity at every instance
         mW = motorW(v[i], rover)
+        # calcualte mechancial power using the motor torque & angular velocity
         P[i] = tau_dcmotor(mW, rover['wheel_assembly']['motor']) *  mW
     return P
 
@@ -446,14 +455,22 @@ def battenergy(t,v,rover): #### NOT DONE ####
         raise Exception('Second input must be a dictionary')
     effcy_tau = rover['wheel_assembly']['motor']['effcy_tau']
     effcy = rover['wheel_assembly']['motor']['effcy']
+    # calculate motor's angualar velocity at every instance
     mW = motorW(v, rover)
+    # calcualte motor torque with angular velocity
     tauDCM = tau_dcmotor(mW, rover['wheel_assembly']['motor'])
+    # calcualte mechanical power using the translational velocity
     mP = mechpower(v, rover)
+    # interpolate through the given torque efficiencies with a cubic relationship 
     effcy_fun = interp1d(effcy_tau, effcy,kind='cubic')
+    # find data values using this function for this rover's motor torque
     effcyFuncTau = effcy_fun(tauDCM)
+    # initialize zeros array for power, as the same length as mechanical power array
     power = np.zeros(len(mP))
     for j in range(len(mP)):
+        # calculate batter power using mechancial power and efficiency function.
         power[j] = (mP[j] * 6)/effcyFuncTau[j]
+    # integrate pwoer fucntion using trapazoidal method, to find total energy consumed over a simulation run.
     E = integrate.trapz(power, t)
     return E
 
@@ -532,13 +549,21 @@ def simulate_rover(rover, planet,experiment,end_events):
         battery_energy | scalar | Total energy to be extracted from the battery to complete trajectory [J]
         energy_per_distance | scalar | Total energy spent from battery per meter traveled [J/m]
     '''
+    # rover dynamics function using to make function of acceleration vlaues
     terrainFun = lambda t,y : rover_dynamics(t, y, rover, planet, experiment)
+    # solving above function using backwards differentiation formula (implicit)
     sol = integrate.solve_ivp(terrainFun, np.array([experiment['time_range'][0],end_event['max_time']]),experiment['initial_conditions'],method='BDF',events=end_of_mission_event(end_event))
+    # find average velocity
     avgV = np.average(sol.y[0])
+    # array containing the instantaneous power outputted by the motor along the trajectory in watts
     por = mechpower(sol.y[0], rover)
+    # total distance traveled 
     distanceTrav = sol.y[1][len(sol.y[1])-1]
+    # battery energy consumed 
     batenergy = battenergy(sol.t, sol.y[0], rover)
+    # energy per distance (meter) consumed
     energyDistance = batenergy/distanceTrav
+    # updating rover dictionary to include telemetry information
     rover['telemetry'] = {'Time':sol.t, 
                           'completion_time':sol.t[len(sol.t)-1],
                           'velocity':sol.y[0],

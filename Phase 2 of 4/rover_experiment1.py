@@ -44,6 +44,6 @@ ax[2].set(xlabel='Time (s)', ylabel='Power (W)',title='Power vs. Time')
 energy_consumed = battenergy(times, velos, rover)
 batt1 =  0.9072*10**6
 
-# print('Energy of Battery (J)', batt1)
-# print('Energy Consumed (J)', energy_consumed)
-# print('Difference: ',batt1 - energy_consumed)
+print('Energy of Battery (J)', batt1)
+print('Energy Consumed (J)', energy_consumed)
+print('Difference: ', batt1 - energy_consumed)
