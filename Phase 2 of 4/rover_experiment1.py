@@ -20,6 +20,7 @@ velos = rover['telemetry']['velocity']
 pows = rover['telemetry']['power']
 
 
+
 fig, ax = plt.subplots(3, 1)
 fig.tight_layout(h_pad=4)
 
@@ -35,40 +36,14 @@ ax[1].set(xlabel='Time (s)', ylabel='Velocity (m/s)',title='Velocity vs. Time')
 ax[2].plot(times, pows, 'go', times, pows, 'g')
 ax[2].set(xlabel='Time (s)', ylabel='Power (W)',title='Power vs. Time')
 
-# rover, planet = rover1()
-# effcy_fun = interp1d(rover['wheel_assembly']['motor']['effcy_tau'], rover['wheel_assembly']['motor']['effcy'], kind = 'cubic')
-# rover_effcy = np.linspace(np.amin(rover['wheel_assembly']['motor']['effcy_tau']),np.amax(rover['wheel_assembly']['motor']['effcy_tau']),100)
-# efficiency = effcy_fun(rover_effcy)
-
-# plt.plot(rover_effcy,efficiency,color='g',label="interpolated values with cubic fit")
-# plt.plot(rover['wheel_assembly']['motor']['effcy_tau'],rover['wheel_assembly']['motor']['effcy'],'r*', label='known data values')
-# plt.title("Motor Torque vs. Efficiency")
-# plt.xlabel("Torque (N*m)")
-# plt.ylabel("Efficiency")
-# plt.legend(loc="best")
-# plt.show()
+# Task 9 Calculations:
+    # energy = integral of power
+# max_time = rover['telemetry']['completion_time']
 
 
+energy_consumed = battenergy(times, velos, rover)
+batt1 =  0.9072*10**6
 
-# X1 = np.linspace(-5, 5, 20)
-# X2 = np.linspace(0, 100, 20)
-# X3 = np.linspace(1, 20, 20)
-
-# # create 2 plots that are well spaced apart
-# fig, ax = plt.subplots(3, 1)
-# fig.tight_layout(h_pad=4)
-    
-# # graph the first equation on the top plot
-# ax[0].plot(X1, 2*(X1), 'bo', X1, 2*(X1), 'b')
-# ax[0].set(xlabel='x', ylabel='y',title='Exhibit 1')
-
-# # graph the second equation on the bottom plot
-# ax[1].plot(X2, 0.5*(X2), 'ro', X2, 0.5*(X2), 'r')
-# ax[1].set(xlabel='work', ylabel='play',title='Exhibit 2')
-
-# # graph the third equation on the bottom plot
-# ax[2].plot(X3, 0.5*(X3), 'ro', X3, 0.5*(X3), 'g')
-# ax[2].set(xlabel='work', ylabel='play',title='Exhibit 2')
-
-
-# plt.show()
+# print('Energy of Battery (J)', batt1)
+# print('Energy Consumed (J)', energy_consumed)
+# print('Difference: ',batt1 - energy_consumed)
