@@ -6,11 +6,16 @@ from define_experiment import *
 import matplotlib.pyplot as plt
 from define_rover_phase2 import *
 
+# import rover
 rover, planet = rover1()
+# efficiency function interpolation
 effcy_fun = interp1d(rover['wheel_assembly']['motor']['effcy_tau'], rover['wheel_assembly']['motor']['effcy'], kind = 'cubic')
+# toruqe values as array
 rover_effcy = np.linspace(np.amin(rover['wheel_assembly']['motor']['effcy_tau']),np.amax(rover['wheel_assembly']['motor']['effcy_tau']),100)
+# efficiency values as array
 efficiency = effcy_fun(rover_effcy)
 
+# plot efficiency vs. torque graph
 plt.plot(rover_effcy,efficiency,color='g',label="interpolated values with cubic fit")
 plt.plot(rover['wheel_assembly']['motor']['effcy_tau'],rover['wheel_assembly']['motor']['effcy'],'r*', label='known data values')
 plt.title("Motor Torque vs. Efficiency")
