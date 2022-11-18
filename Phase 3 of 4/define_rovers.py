@@ -183,7 +183,7 @@ def define_rover_4():
     
     planet = {'g':3.72}           # [m/s^2] gravity of mars
     
-    end_event = {'max_distance' : 10,       # [m?] maximum distance before stopping
+    end_event = {'max_distance' : 10,       # [m] maximum distance before stopping
                  'max_time' : 10000,        # [s] maximum time before stopping
                  'min_velocity' : 0.01}     # [m/s] minimum velocity rover moves
     
