@@ -526,6 +526,14 @@ def edl_dynamics(t, y, edl_system, planet):
     
     # the return vector (note that e is deidt since ei is integral of e)
     dydt = np.array([dy1dt, dy2dt, dmdt, e_vel, e_pos, dy6dt, dy7dt])
+    # dy1dt : acceleration of EDL at various states
+    # dy2dt : velocity of EDL
+    # dmdt : Change in total mass of rockets due to propellant being expelled
+    # e_vel : error of EDL velocity
+    # e_pos : error of EDL position
+    # dy6dt : rover acceleration
+    # dy7dt : 
+    
     
     return dydt
 
