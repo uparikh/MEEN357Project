@@ -566,7 +566,7 @@ def simulate_rover(rover, planet,experiment,end_events):
     # updating rover dictionary to include telemetry information
     rover['telemetry'] = {'Time':sol.t, 
                           'completion_time':sol.t[len(sol.t)-1],
-                          'velocity':sol.y[0],
+concerts in                           'velocity':sol.y[0],
                           'position':sol.y[1],
                           'distance_traveled':sol.y[1][len(sol.y[1])-1],
                           'max_velocity':np.max(sol.y[0]),
