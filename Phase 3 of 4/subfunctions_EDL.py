@@ -10,7 +10,9 @@ from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 from scipy.interpolate import PchipInterpolator as pchip
 from scipy.integrate import solve_ivp
+from define_planet import *
 
+planet = define_planet()
 
 def get_mass_rover(edl_system):
 
@@ -73,6 +75,7 @@ def get_local_atm_properties(planet, altitude):
     density = planet['density'](temperature, pressure) 
     
     return density, temperature, pressure
+
 
 def F_buoyancy_descent(edl_system,planet,altitude):
     
