@@ -35,18 +35,23 @@ plt.subplot(3,1,1)
 plt.plot(diameters, times)
 plt.xlabel('Diameter (m)')
 plt.ylabel('Time (s)')
+plt.title('Time of decent vs. Diameter')
 
 plt.subplot(3,1,2)
 plt.plot(diameters, v)
 plt.xlabel('Diameter (m)')
 plt.ylabel('Velocity (m/s)')
+plt.title('Landing Velocity vs. Diameter')
+
 
 plt.subplot(3,1,3)
 plt.plot(diameters,fail)
 plt.xlabel('Diameter (m)')
 plt.ylabel('Success/Failure')
+plt.title('Success and Failure vs. Diameter')
 
-plt.subplots_adjust(bottom=-1.2)
+
+plt.subplots_adjust(bottom=-1.9)
 plt.show()
 
 
