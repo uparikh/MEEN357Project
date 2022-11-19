@@ -5,6 +5,7 @@ from define_edl_system import *
 from define_planet import *
 from define_mission_events import *
 from subfunctions_EDL import *
+from redefine_edl_system import *
  
 edl_system = define_edl_system_1()
 rocket = define_edl_system_1()
@@ -21,18 +22,7 @@ times = np.array([])
 v = np.array([])
 fail = np.array([])
 for d in diameters:
-    edl_system = define_edl_system_1()
-    # initial conditions:
-    edl_system['altitude'] = 11000    # [m] initial altitude
-    edl_system['velocity'] = -578     # [m/s] initial velocity
-    rocket['on'] = False              # rocket is off
-    edl_system['parachute']['deployed'] = True   # our parachute is open
-    edl_system['parachute']['ejected'] = False   # and still attached
-    heat_shield['ejected'] = False               # heat shield is not ejected
-    sky_crane['on'] = False                      # sky crane is off
-    speed_controller['on'] = False               # speed controller is off
-    position_controller['on'] = False            # position controller is off
-    edl_system['rover']['on_ground'] = False # the rover has not yet landed
+    edl_system = redefine_edl_system(edl_system)
     edl_system['parachute']['diameter'] = d
     [t, Y, edl_system] = simulate_edl(edl_system, planet, mission_events, tmax, True)
     times = np.append(times,t[len(t)-1]) 
