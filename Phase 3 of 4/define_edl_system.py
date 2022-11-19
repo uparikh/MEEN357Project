@@ -25,12 +25,12 @@ def define_edl_system_1():
         
     # Rocket dict.  This defines a SINGLE rocket.
     rocket = {'on' : False,
-              'structure_mass' : 8.0,                 # [kg] everything not fuel
-              'initial_fuel_mass' : 230.0,            # [kg]  230.0
+              'structure_mass' : 8.0,                 # [kg] mass of everything not fuel
+              'initial_fuel_mass' : 230.0,            # [kg]intial mass of fuel
               'fuel_mass' : 230.0,                    # [kg] current fuel mass (<= initial)
-              'effective_exhaust_velocity' : 4500.0,  # [m/s]
-              'max_thrust' : 3100.0,                  # [N]  
-              'min_thrust' : 40.0}                    # [N]
+              'effective_exhaust_velocity' : 4500.0,  # [m/s] velocity of exhaust
+              'max_thrust' : 3100.0,                  # [N] maxiumum thurst force of rocket
+              'min_thrust' : 40.0}                    # [N] minimum thurst force of rocket
         
     speed_control = {'on' : False,             # indicates whether control mode is activated
                      'Kp' : 2000,              # proportional gain term
@@ -57,8 +57,8 @@ def define_edl_system_1():
     # Heat shield dict
     heat_shield = {'ejected' : False,  # true means heat shield has been ejected from system
                    'mass' : 225.0,     # [kg] mass of heat shield
-                   'diameter' : 4.5,   # [m]
-                   'Cd' : 0.35}        # [-]
+                   'diameter' : 4.5,   # [m] diameter of heat shield
+                   'Cd' : 0.35}        # [-] non-dimensional drag coefficient of heat shield
         
     rover, _ = define_rover_4()
         
@@ -67,13 +67,13 @@ def define_edl_system_1():
                   'velocity' : np.NaN,   # system state variable that is updated throughout simulation
                   'num_rockets' : 8,     # system level parameter
                   'volume' :150,         # system level parameter
-                  'parachute' : parachute,
-                  'heat_shield' : heat_shield,
-                  'rocket' : rocket,
-                  'speed_control' : speed_control,
-                  'position_control' : position_control,
-                  'sky_crane' : sky_crane,
-                  'rover' : rover}
+                  'parachute' : parachute, # variable assigned to parachute dictionary
+                  'heat_shield' : heat_shield, # variable assigned to heat_shield dictionary
+                  'rocket' : rocket, # variable assigned to rocket dictionary
+                  'speed_control' : speed_control, # variable assigned to speed_control dictionary
+                  'position_control' : position_control, # variable assigned to position_control dictionary
+                  'sky_crane' : sky_crane, # variable assigned to sky_crane dictionary
+                  'rover' : rover} # variable assigned to rover dictionary
         
     #del parachute, rocket, speed_control, position_control, sky_crane
     #del heat_shield, rover

@@ -17,7 +17,7 @@ def define_planet():
     
     density = lambda temperature, pressure: pressure/(0.1921*(temperature+273.15)) # [kg/m^3]
     
-    mars = {'g' : -3.72,   # m/s^2]
+    mars = {'g' : -3.72,   # [m/s^2]
             'altitude_threshold' : 7000, # [m]
             'low_altitude' : low_altitude, 
             'high_altitude' : high_altitude,
