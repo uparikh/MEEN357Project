@@ -28,9 +28,9 @@ for d in diameters:
     times = np.append(times,t[len(t)-1]) 
     v = np.append(np.abs(v),Y[0][len(Y[0])-1])
     if Y[0][len(Y[0])-1] <= edl_system['sky_crane']['danger_speed']:
-        fail = np.append(fail,1)
-    else:
         fail = np.append(fail,0)
+    else:
+        fail = np.append(fail,1)
 plt.subplot(3,1,1)
 plt.plot(diameters, times)
 plt.xlabel('Diameter (m)')
