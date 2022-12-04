@@ -22,18 +22,18 @@ planet = define_planet()
 edl_system = define_edl_system()
 mission_events = define_mission_events()
 edl_system = define_chassis(edl_system,'steel')
-edl_system = define_motor(edl_system,'base_he')
-# edl_system = define_batt_pack(edl_system, 'LiFePO4', 15)
-edl_system = define_batt_pack(edl_system,'NiMH', 8)
-tmax = 5000
+# edl_system = define_motor(edl_system,'speed_he')
+# # edl_system = define_batt_pack(edl_system, 'LiFePO4', 15)
+# edl_system = define_batt_pack(edl_system,'NiMH', 8)
+# tmax = 5000
 
 # Overrides what might be in the loaded data to establish our desired
 # initial conditions
-edl_system['altitude'] = 11000    # [m] initial altitude
-edl_system['velocity'] = -578     # [m/s] initial velocity
-edl_system['parachute']['deployed'] = True   # our parachute is open
-edl_system['parachute']['ejected'] = False   # and still attached
-edl_system['rover']['on_ground'] = False # the rover has not yet landed
+# edl_system['altitude'] = 11000    # [m] initial altitude
+# edl_system['velocity'] = -578     # [m/s] initial velocity
+# edl_system['parachute']['deployed'] = True   # our parachute is open
+# edl_system['parachute']['ejected'] = False   # and still attached
+# edl_system['rover']['on_ground'] = False # the rover has not yet landed
 
 experiment, end_event = experiment1()
 
@@ -66,7 +66,7 @@ bounds = Bounds([16, 0.5, 500, 0.05, 200], [18, 0.7, 700, 0.12, 290])
 #x0= [18.0, 0.698108553, 258.3462826, 0.050603461, 288.0]
 # x0 = [18.5, 0.60, 455.0, 0.07, 288.0]
 # x0 = [16.75, 0.60, 455.0, 0.08, 286.0] #139.539930 [s], 6371935.009993 [$]
-x0 = [16.15, 0.45, 450.0, 0.08, 275.0] #139.272482 [s]
+x0 = [16.15, 0.45, 452.0, 0.08, 276.0] #139.272482 [s]
 
 # resultsTotal = np.array([[]])
 # para = np.arange(14,19.25,0.25)
@@ -141,7 +141,7 @@ def callbackF(Xi):  # this is for SLSQP reporting during optimization
 ###############################################################################
 # call the COBYLA optimizer --------------------------------------------------#
 cobyla_bounds = [[14, 19], [0.3, 0.7], [100, 500], [0.05, 0.3], [100, 290]]
-# # #construct the bounds in the form of constraints
+# #construct the bounds in the form of constraints
 cons_cobyla = []
 for factor in range(len(cobyla_bounds)):
     lower, upper = cobyla_bounds[factor]
@@ -161,7 +161,7 @@ res = minimize(obj_f, x0, method='COBYLA', constraints=cons_cobyla, options=opti
 ###############################################################################
 # call the differential evolution optimizer ----------------------------------#
 # popsize=5 # define the population size
-# maxiter=10 # define the maximum number of iterations
+# maxiter=2 # define the maximum number of iterations
 # res = differential_evolution(obj_f, bounds=bounds, constraints=nonlinear_constraint, 
 #                               popsize=popsize, maxiter=maxiter, disp=True, polish = False) 
 # end call the differential evolution optimizer ------------------------------#

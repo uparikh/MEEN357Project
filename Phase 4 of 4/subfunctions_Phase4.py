@@ -1677,8 +1677,8 @@ def obj_fun_time(x,edl_system,planet,mission_events,tmax,experiment,end_event):
     #
     # Unpack the edl-related design variables and update the struct
     edl_system['parachute']['diameter'] = x[0]
-    edl_system['rocket']['fuel_mass'] = x[4]
-    edl_system['rocket']['initial_fuel_mass'] = x[4]
+    edl_system['rocket']['fuel_mass'] = x[3] #x[4]
+    edl_system['rocket']['initial_fuel_mass'] = x[3] #x[4]
     edl_system['rover']['wheel_assembly']['wheel']['radius'] = x[1]
     edl_system['rover']['chassis']['mass'] = x[2]
     edl_system['rover']['wheel_assembly']['speed_reducer']['diam_gear'] = x[3]
@@ -1876,6 +1876,6 @@ def obj_fun_plot(x,edl_system,planet,mission_events,tmax,experiment,end_event):
     # ******************
     # CALCULATE TOTAL TIME
     # **
-
+  
     
     return time_edl, rover_position, rover_time
