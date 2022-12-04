@@ -30,9 +30,9 @@ planet = define_planet()
 edl_system = define_edl_system()
 mission_events = define_mission_events()
 edl_system = define_chassis(edl_system,'steel')
-edl_system = define_motor(edl_system,'speed_he')
+edl_system = define_motor(edl_system,'speed')
 # edl_system = define_batt_pack(edl_system, 'LiFePO4', 15)
-edl_system = define_batt_pack(edl_system,'NiMH', 8)
+edl_system = define_batt_pack(edl_system,'NiMH', 9)
 tmax = 5000
 
 # Overrides what might be in the loaded data to establish our desired
@@ -74,7 +74,7 @@ bounds = Bounds([16, 0.5, 500, 0.05, 200], [18, 0.7, 700, 0.12, 290])
 #x0= [18.0, 0.698108553, 258.3462826, 0.050603461, 288.0]
 # x0 = [18.5, 0.60, 455.0, 0.07, 288.0]
 # x0 = [16.75, 0.60, 455.0, 0.08, 286.0] #139.539930 [s], 6371935.009993 [$]
-x0 = [17.2, 0.45, 450.0, 0.08, 265.0] #139.272482 [s]
+x0 = [17.0, 0.7, 445.0, 0.05, 266.0] #139.272482 [s]
 
 # resultsTotal = np.array([[]])
 # para = np.arange(14,19.25,0.25)
