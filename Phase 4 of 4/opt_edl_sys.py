@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Sun Dec  4 13:02:21 2022
+
+@author: uditparikh
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 
 @author: MEEN 357: Marvin Engineering Design Team
 """
@@ -14,6 +22,7 @@ from scipy.optimize import NonlinearConstraint
 import pickle
 import copy
 import sys
+import csv
 
 # the following calls instantiate the needed structs and also make some of
 # our design selections (battery type, etc.)
@@ -21,8 +30,9 @@ planet = define_planet()
 edl_system = define_edl_system()
 mission_events = define_mission_events()
 edl_system = define_chassis(edl_system,'steel')
-edl_system = define_motor(edl_system,'base_he')
-edl_system = define_batt_pack(edl_system,'LiFePO4', 15)
+edl_system = define_motor(edl_system,'speed_he')
+# edl_system = define_batt_pack(edl_system, 'LiFePO4', 15)
+edl_system = define_batt_pack(edl_system,'NiMH', 8)
 tmax = 5000
 
 # Overrides what might be in the loaded data to establish our desired
@@ -56,13 +66,27 @@ max_batt_energy_per_meter = edl_system['rover']['power_subsys']['battery']['capa
 # search bounds
 #x_lb = np.array([14, 0.2, 250, 0.05, 100])
 #x_ub = np.array([19, 0.7, 800, 0.12, 290])
-bounds = Bounds([14, 0.2, 250, 0.05, 100], [19, 0.7, 800, 0.12, 290])
+bounds = Bounds([16, 0.5, 500, 0.05, 200], [18, 0.7, 700, 0.12, 290])
 
 # initial guess
 #x0 = np.array([14.0005, .7, 252.4652, 0.05, 230]) 
 #x0 = np.array([17.0, .7, 250.0, 0.07, 250.0]) 
 #x0= [18.0, 0.698108553, 258.3462826, 0.050603461, 288.0]
-x0 = [18.5, 0.60, 455.0, 0.07, 288.0]
+# x0 = [18.5, 0.60, 455.0, 0.07, 288.0]
+# x0 = [16.75, 0.60, 455.0, 0.08, 286.0] #139.539930 [s], 6371935.009993 [$]
+x0 = [17.2, 0.45, 450.0, 0.08, 265.0] #139.272482 [s]
+
+# resultsTotal = np.array([[]])
+# para = np.arange(14,19.25,0.25)
+# chas = np.arange(250,805,5)
+# sprd = np.arange(0.05,0.13,0.01)
+# fuel = np.arange(100,292,2)
+# for i in range(len(para)):
+#z     for j in range(len(sprd)):
+#         for k in range(len(chas)):
+#             for m in range(len(fuel)):
+                # x0 = [para[i],sprd[j],chas[k],fuel[m]]
+
 
 # lambda for the objective function
 obj_f = lambda x: obj_fun_time(x,edl_system,planet,mission_events,tmax,
@@ -101,10 +125,10 @@ def callbackF(Xi):  # this is for SLSQP reporting during optimization
 # You should fully comment out all but the one you wish to use
 
 ###############################################################################
-#call the trust-constr optimizer --------------------------------------------#
-# options = {'maxiter': 50, 
-#             #'initial_constr_penalty': 5.0,
-#             #'initial_barrier_parameter': 1.0,
+# call the trust-constr optimizer --------------------------------------------#
+# options = {'maxiter': 15, 
+#             # 'initial_constr_penalty': 5.0,
+#             # 'initial_barrier_parameter': 1.0,
 #             'verbose' : 3,
 #             'disp' : True}
 # res = minimize(obj_f, x0, method='trust-constr', constraints=nonlinear_constraint, 
@@ -124,8 +148,8 @@ def callbackF(Xi):  # this is for SLSQP reporting during optimization
 
 ###############################################################################
 # call the COBYLA optimizer --------------------------------------------------#
-cobyla_bounds = [[14, 19], [0.2, 0.7], [250, 800], [0.05, 0.12], [100, 290]]
-#construct the bounds in the form of constraints
+cobyla_bounds = [[14, 19], [0.3, 0.7], [100, 500], [0.05, 0.3], [100, 290]]
+# # #construct the bound s in the form of constraints
 cons_cobyla = []
 for factor in range(len(cobyla_bounds)):
     lower, upper = cobyla_bounds[factor]
@@ -136,7 +160,7 @@ for factor in range(len(cobyla_bounds)):
     cons_cobyla.append(l)
     cons_cobyla.append(u)
     cons_cobyla.append(ineq_cons)  # the rest of the constraints
-options = {'maxiter':50, 
+options = {'maxiter':30, #50 
             'disp' : True}
 res = minimize(obj_f, x0, method='COBYLA', constraints=cons_cobyla, options=options)
 # end call to the COBYLA optimizer -------------------------------------------#
@@ -145,9 +169,9 @@ res = minimize(obj_f, x0, method='COBYLA', constraints=cons_cobyla, options=opti
 ###############################################################################
 # call the differential evolution optimizer ----------------------------------#
 # popsize=5 # define the population size
-# maxiter=5 # define the maximum number of iterations
+# maxiter=10 # define the maximum number of iterations
 # res = differential_evolution(obj_f, bounds=bounds, constraints=nonlinear_constraint, 
-#                              popsize=popsize, maxiter=maxiter, disp=True, polish = False) 
+#                               popsize=popsize, maxiter=maxiter, disp=True, polish = False) 
 # end call the differential evolution optimizer ------------------------------#
 ###############################################################################
 
@@ -218,8 +242,8 @@ edl_system['rocket']['fuel_mass'] = xbest[4]
 # These lines save your design for submission for the rover competition.
 # You will want to change them to match your team information.
 
-edl_system['team_name'] = 'FunTeamName'  # change this to something fun for your team (or just your team number)
-edl_system['team_number'] = 99   # change this to your assigned team number
+edl_system['team_name'] = 'Team 7'  # change this to something fun for your team (or just your team number)
+edl_system['team_number'] = 7   # change this to your assigned team number
 
 # This will create a file that you can submit as your competition file.
 with open('challenge_design_team99.pickle', 'wb') as handle:
@@ -239,6 +263,16 @@ time_rover = edl_system['rover']['telemetry']['completion_time']
 total_time = time_edl + time_rover
  
 edl_system_total_cost=get_cost_edl(edl_system)
+
+#   - wheel radius [m]
+#   - chassis mass [kg]
+#   - speed reducer gear diameter (d2) [m]
+#   - rocket fuel mass [kg]
+
+resultsTotal = np.array([[]])
+results = [xbest[0],xbest[4],time_edl,edl_system['velocity'],xbest[1],xbest[3],xbest[2],time_rover,total_time,edl_system['rover']['telemetry']['average_velocity'],edl_system['rover']['telemetry']['distance_traveled'],edl_system['rover']['telemetry']['energy_per_distance'],edl_system_total_cost]
+resultsTotal = np.append(resultsTotal,results)
+
 
 print('----------------------------------------')
 print('----------------------------------------')
